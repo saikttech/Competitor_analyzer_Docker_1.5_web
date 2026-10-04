@@ -81,8 +81,8 @@ graph TD
 ### 2. Установка
 ```bash
 # Клонируйте репозиторий
-git clone https://github.com/your-username/Competitor-Analyzer-MAX.git
-cd Competitor-Analyzer-MAX
+git clone https://github.com/saikttech/Competitor_analyzer_Docker_1.5_web.git
+cd Competitor_analyzer_Docker_1.5_web
 
 # Создайте виртуальное окружение (ВАЖНО: Python 3.11 или 3.12)
 python -m venv .venv
