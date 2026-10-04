@@ -1,0 +1,34 @@
+# Виртуальное окружение
+.venv/
+venv/
+env/
+
+# Секреты
+.env
+.env.local
+
+# Кэш Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+
+# Отчёты (не коммитим сгенерированные файлы)
+reports/*.md
+reports/*.pdf
+!reports/.gitkeep
+
+# Шрифты (слишком большие для GitHub)
+fonts/*.ttf
+fonts/*.otf
+
+# IDE
+.vscode/
+.idea/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# OS
+.DS_Store
+Thumbs.db

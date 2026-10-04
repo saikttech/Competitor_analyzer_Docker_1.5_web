@@ -1,0 +1,78 @@
+services:
+  db:
+    image: pgvector/pgvector:pg15
+    container_name: ca_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: competitors_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: ca_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: ca_api
+    command: python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ./reports:/app/reports
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build: .
+    container_name: ca_worker
+    command: python -m celery -A celery_app worker --loglevel=info --pool=solo
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ./reports:/app/reports
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  webui:
+    build: .
+    container_name: ca_webui
+    command: streamlit run streamlit_app.py --server.port=8501 --server.address=0.0.0.0 --server.enableCORS=false
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ./reports:/app/reports
+      - ./fonts:/app/fonts
+    depends_on:
+      - api
+
+volumes:
+  pg_data:
